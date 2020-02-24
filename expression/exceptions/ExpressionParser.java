@@ -159,7 +159,6 @@ public class ExpressionParser implements Parser {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("overflow");
         }
-        
         return new Const(result);
     }
 
