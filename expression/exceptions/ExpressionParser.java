@@ -144,7 +144,7 @@ public class ExpressionParser implements Parser {
     }
 
     
-    protected Const constParse(ExpressionSource source) {
+    protected Const constParse(ExpressionSource source) throws IllegalArgumentException {
         source.back();
         StringBuilder value = new StringBuilder();
         if (source.token() == '-') {
@@ -153,7 +153,14 @@ public class ExpressionParser implements Parser {
         while (source.hasNext() && Character.isDigit(source.token())) {
             value.append(source.next());
         }
-        return new Const(Integer.parseInt(value.toString()));
+        int result = 0;
+        try {
+            result = Integer.parseInt(value.toString()); 
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("overflow");
+        }
+        
+        return new Const(result);
     }
 
     private String operationParse(ExpressionSource source) throws ParserException{

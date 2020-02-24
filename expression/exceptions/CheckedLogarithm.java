@@ -9,7 +9,6 @@ public class CheckedLogarithm extends Log2 {
     }
 
     public int result(int x) throws ArithmeticException{
-        // it's working
         if (x <= 0) {
             throw new IllegalStateException(Integer.toString(x));
         }
