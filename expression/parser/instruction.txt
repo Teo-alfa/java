@@ -1,0 +1,14 @@
+((left) a (right) b) 
+
+if (b == operation)
+  if ( a.pr == b.pr ) {
+     (left) = (left) a (right);
+     a = b;
+     (right) = null;
+  if ( a.pr > b.pr )
+     "--"
+     return left;
+  if ( a.pr < b.pr )
+     (right) = new ((right) b null) 
+     if (a.pr > last.pr)             // (left) a (right) ... c - c = last
+           
