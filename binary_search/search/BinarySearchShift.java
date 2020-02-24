@@ -15,6 +15,7 @@ public class BinarySearchShift {
     }
     public static int recurentSearch(int a[], int key, int left, int right) {
         int result = (right + left) / 2;
+        // comment
         if (a.length == 0) {
             right = 0;
         } else {
