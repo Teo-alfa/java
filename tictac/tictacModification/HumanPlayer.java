@@ -1,4 +1,4 @@
-package ticTacToe;
+package tictac.tictacModification;
 
 import java.io.PrintStream;
 import java.util.Scanner;
