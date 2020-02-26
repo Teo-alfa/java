@@ -5,10 +5,10 @@ public class ArrayQueueADT {
     private Object[] elements = new Object[2];
 
     public static void enqueue(ArrayQueueADT queue, Object element) {
-        assert element != null;
+        queue.size++;
         increaseSize(queue);
-        queue.end = queue.size++ != 0 ? (queue.end + 1) % queue.elements.length : queue.end;
         queue.elements[queue.end] = element;
+        queue.end = (queue.end + 1) % queue.elements.length;
     }
 
     public static Object dequeue(ArrayQueueADT queue) {

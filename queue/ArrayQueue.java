@@ -5,10 +5,10 @@ public class ArrayQueue {
     private Object[] elements = new Object[2];
 
     public void enqueue(Object element) {
-        assert element != null;
+        size++;
         increaseSize();
-        end = size++ != 0 ? (end + 1) % elements.length : end;
         elements[end] = element;
+        end = (end + 1) % elements.length;
     }
 
     public Object dequeue() {
