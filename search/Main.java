@@ -1,4 +1,4 @@
-import search.BinarySearch;
+package search;
 
 public class Main {
     public static void main(String[] args) {

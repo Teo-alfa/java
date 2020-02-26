@@ -1,4 +1,4 @@
-package ticTacToe;
+package tictac.ticTacToe;
 
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)

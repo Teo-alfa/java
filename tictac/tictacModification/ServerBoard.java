@@ -1,4 +1,4 @@
-package ticTacToe;
+package tictac.tictacModification;
 
 public class ServerBoard implements Position {
     private TicTacToeBoard board;

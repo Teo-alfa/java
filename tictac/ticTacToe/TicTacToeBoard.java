@@ -1,4 +1,4 @@
-package ticTacToe;
+package tictac.ticTacToe;
 
 import java.util.Arrays;
 import java.util.Map;
