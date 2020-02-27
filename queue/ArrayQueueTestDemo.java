@@ -9,7 +9,10 @@ import expression.Variable;
 
 public class ArrayQueueTestDemo {
     static int LINESIZE = 33;
-    static DecimalFormat FORMAT = new DecimalFormat("\u001B[33m###\u001B[0m");
+    static DecimalFormat FORMAT = new DecimalFormat("\u001B[3m\u001B[33m00\u001B[0m");
+
+    private static Object expected;
+    private static Object actual;
 
     public static void fill(ArrayQueue queue, Object[] elements) {
         for (Object object : elements) {
@@ -94,6 +97,8 @@ public class ArrayQueueTestDemo {
             Object a1 = queue.dequeue(), a2 = deque.pollFirst();
             if(!a1.equals(a2)) {
                 failed = true;
+                expected = a2;
+                actual = a1;
                 break;
             } 
         }
@@ -109,12 +114,25 @@ public class ArrayQueueTestDemo {
         for (int size = 1; size <= maxSize; size++) {
             number+= size - 1;
             for (int delete = 1; delete < size + 1; delete++) {
-                failed = !simpleRandomTest(size, size + 1 - delete, delete - 1);
-                System.out.println("=== testRandom #" + FORMAT.format(number + delete) + " running: " + (!failed ? "\u001B[32mDone" : "\u001B[31mFailed") + "\u001B[0m");
+                Exception exp = null;
+                try {
+                    failed = !simpleRandomTest(size, size + 1 - delete, delete - 1);
+                } catch (Exception e) {
+                    failed = true;
+                    exp = e;
+                }
+                System.out.println("=== testRandom #" + FORMAT.format(number + delete) + " running: " + boldItalicString(!failed ? "Done" : "Failed", !failed ? 32 : 31));
                 if (failed) {
                     System.out.println(line('-', LINESIZE));
                     System.out.println("Information about test: ");
-                    System.out.println("Size: " + size + ", number of adds: " + (size + 1 - delete) + ", number od deletes: " + (delete - 1));
+                    System.out.println("Size: " + size + ", number of adds: " + (size + 1 - delete) + ", number of deletions: " + (delete - 1));
+                    System.out.print("Cause of breakdown: ");
+                    if (exp != null) {
+                        exp.printStackTrace();
+                    } else {
+                        System.out.println("\nIn dequeue() -" + " expected: " + expected.toString());
+                        System.out.println("               actual: " + actual.toString());
+                    }
                     break;
                 }
             }
@@ -132,6 +150,10 @@ public class ArrayQueueTestDemo {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < number; i++) { result.append(example); }
         return result.toString();
+    }
+
+    private static String boldItalicString(String sourse, int color) {
+        return "\u001B[3m\u001B["+ color + "m\u001B[1m" + sourse + "\u001B[0m";
     }
 
     public static void main(String[] args) {
