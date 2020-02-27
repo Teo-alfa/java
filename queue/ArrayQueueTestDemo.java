@@ -110,7 +110,6 @@ public class ArrayQueueTestDemo {
             number+= size - 1;
             for (int delete = 1; delete < size + 1; delete++) {
                 failed = !simpleRandomTest(size, size + 1 - delete, delete - 1);
-                failed = number + delete == 56 ? true : failed;
                 System.out.println("=== testRandom #" + FORMAT.format(number + delete) + " running: " + (!failed ? "\u001B[32mDone" : "\u001B[31mFailed") + "\u001B[0m");
                 if (failed) {
                     System.out.println(line('-', LINESIZE));
