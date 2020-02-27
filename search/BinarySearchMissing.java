@@ -13,32 +13,33 @@ public class BinarySearchMissing {
             // middle >= left && middle <= right && a.length == 0 && I1
             right = 0;
         } else {
-            // middle >= left && middle <= right && I1 && a.length > 0
+            // middle >= left && middle <= right && a.length > 0
             // distance = right - left
+            // cond = distance > 1;
             while (right - left > 1) {
-                // I : distance > 1
-                // P2 = middle >= left && middle <= right && I1 && a.length > 0
-                // P2 && I
+                // cond
+                // P2 = middle >= left && middle <= right && a.length > 0
+                // P2 && cond
                 middle = (right + left) / 2;
                 if (a[middle] > key) {
-                    // P2 && I && a[middle] > key
+                    // P2 && cond && a[middle] > key
                     left = middle;
                     // P2 && a[middle] > key
                 } else {
-                    // P2 && I && a[middle] <= key
+                    // P2 && cond && a[middle] <= key
                     right = middle;
                     // P2 && a[middle] <= key
                 }
                 // (right == middle || left == middle) -->  (distance` = right` - left` <= (right - left) - 1 && distance >= 2) || (distance < 2 == !(distance > 1))
-                // --> !I || сходимость
+                // --> !cond || сходимость
                 // (right == middle || left == middle) && middle >= left && middle <= right && (distance` <= distance - 1 || distance < 1)
             }
-            // P2 && !I
+            // P2 && !cond
         }
-        // I1 && (P2 || a.length == 0) && !I
+        // (P2 || a.length == 0) && !cond
         if (a.length == 0 || (right < 0 || right >= a.length) || (a[right] != key)) {
             // P3 : a.length == 0 || (right < 0 || right >= a.length) || (a[right] != key)
-            // I1 && (P2 || a.length == 0) && !I && (a.length == 0 || (right < 0 || right >= a.length) || (a[right] != key))          
+            // (P2 || a.length == 0) && !cond && (a.length == 0 || (right < 0 || right >= a.length) || (a[right] != key))          
             right = -right -1;
         }
         return right;
@@ -77,12 +78,12 @@ public class BinarySearchMissing {
             }
             //Post && !(right - left > 1)
         }
-        // I1 && ((a.length == 0) || (Post && !(right - left > 1)))
+        // ((a.length == 0) || (Post && !(right - left > 1)))
         if (level == 0) {
-            // I1 && ((a.length == 0) || (Post && !(right - left > 1))) && level == 0
+            // ((a.length == 0) || (Post && !(right - left > 1))) && level == 0
             if (a.length == 0 || (right < 0 || right >= a.length) || (a[right] != key)) {  
                 // P3 : a.length == 0 || (right < 0 || right >= a.length) || (a[right] != key)
-                // I1 && ((a.length == 0) || (Post && !(right - left > 1))) && level == 0 && P3     
+                // ((a.length == 0) || (Post && !(right - left > 1))) && level == 0 && P3     
                 right = -right -1;
             }  
         }
@@ -100,7 +101,7 @@ public class BinarySearchMissing {
     }
     // Post : (!P3 --> R = i: a[i] == key) || (P3 --> R : a[-R - 1] <= key && key <= a[-R])
     
-    // Pre : args.length > 0
+    // Pre : args.length > 0 && Integer.parseInt(arg[i]) for i < [0, args.length]
     public static void main(String[] args) {
         if (args.length < 1) {
             // args.length < 1
@@ -120,4 +121,5 @@ public class BinarySearchMissing {
         System.out.println(recurrentSearch(a, key));
         // args.length > 0 && key != null
     }
+    //post: post of reccurentSearch
 }
