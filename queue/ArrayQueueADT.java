@@ -59,7 +59,7 @@ public class ArrayQueueADT {
             result.append(queue.elements[(i + queue.start) % queue.elements.length].toString()).append(", ");
         }
         return queue.size > 0 
-                ? result.append(queue.elements[queue.end]).append(']').toString()
+                ? result.append(queue.elements[(queue.end - 1 + queue.elements.length) % queue.elements.length]).append(']').toString()
                 : result.append(']').toString();
     }
 }

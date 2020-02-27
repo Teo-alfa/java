@@ -56,10 +56,10 @@ public class ArrayQueueModule {
         StringBuilder result = new StringBuilder();
         result.append('[');
         for (int i = 0; i < size - 1; i++) {
-            result.append(elements[(i + start) % elements.length].toString()).append(", ");
+            result.append(elements[(i + start) % elements.length]).append(", ");
         }
         return size > 0 
-                ? result.append(elements[end]).append(']').toString()
+                ? result.append(elements[(end - 1 + elements.length) % elements.length]).append(']').toString()
                 : result.append(']').toString();
     }
 }

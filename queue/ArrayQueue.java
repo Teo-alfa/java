@@ -58,8 +58,9 @@ public class ArrayQueue {
         for (int i = 0; i < size - 1; i++) {
             result.append(elements[(i + start) % elements.length].toString()).append(", ");
         }
+        //System.out.println(start + " " + end + " " + elements[end]);
         return size > 0 
-                ? result.append(elements[end]).append(']').toString()
+                ? result.append(elements[(end - 1 + elements.length) % elements.length]).append(']').toString()
                 : result.append(']').toString();
     }
 }
