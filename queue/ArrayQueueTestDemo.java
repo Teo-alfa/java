@@ -11,8 +11,8 @@ public class ArrayQueueTestDemo {
     static int LINESIZE = 33;
     static DecimalFormat FORMAT = new DecimalFormat("\u001B[3m\u001B[33m00\u001B[0m");
 
-    private static Object expected;
-    private static Object actual;
+    private Object expected;
+    private Object actual;
 
     public static void fill(ArrayQueue queue, Object[] elements) {
         for (Object object : elements) {
@@ -53,7 +53,7 @@ public class ArrayQueueTestDemo {
         }
     }
 
-    public static boolean simpleRandomTest(int size, int numberOfAdd, int numberOfPop) {
+    public boolean simpleRandomTest(int size, int numberOfAdd, int numberOfPop) {
         ArrayDeque<Object> deque = new ArrayDeque<Object>();
         ArrayQueue queue = new ArrayQueue();
         Object[] objects = randomArray(size);
@@ -105,7 +105,7 @@ public class ArrayQueueTestDemo {
         return !failed;
     }
 
-    public static void test() {
+    public void test() {
         int number = 0;
         int maxSize = 15;
         boolean failed = false;
@@ -157,6 +157,6 @@ public class ArrayQueueTestDemo {
     }
 
     public static void main(String[] args) {
-        test();
+        new ArrayQueueTestDemo().test();
     }
 }
