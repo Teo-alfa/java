@@ -1,14 +1,13 @@
 package queue;
 
 public class ArrayQueueModule {
-    private static int size, start, end;
+    private static int size, start;
     private static Object[] elements = new Object[2];
 
     public static void enqueue(Object element) {
         size++;
         increaseSize();
-        elements[end] = element;
-        end = (end + 1) % elements.length;
+        elements[(size + start - 1) % elements.length] = element;
     }
 
     public static Object dequeue() {
@@ -16,7 +15,9 @@ public class ArrayQueueModule {
         Object tmp = elements[start];
         elements[start] = null;
         start = (start + 1) % elements.length;
-        size--;
+        if (--size == 0) {
+            start = 0;
+        }
         return tmp;
     }
 
@@ -35,20 +36,17 @@ public class ArrayQueueModule {
 
     public static void clear() {
         elements = new Object[2];
-        size = start = end = 0;
+        size = start = 0;
     }
 
     private static void increaseSize() {
-        if (size == elements.length || (end + 1 == start)) {
-            Object[] tmpObjects = new Object[(size == elements.length ? 2 : 1) * elements.length];
+        if (size == elements.length) {
+            Object[] tmpObjects = new Object[2 * elements.length];
             for (int i = 0; i < size; i++) {
                 tmpObjects[i] = elements[(i + start) % elements.length];
             }
             elements = tmpObjects;
-            if (end + 1 == start) {
-                end = size > 0 ? size - 1 : 0;
-                start = 0;
-            }
+            start = 0;
         }
     }
 
@@ -59,7 +57,7 @@ public class ArrayQueueModule {
             result.append(elements[(i + start) % elements.length]).append(", ");
         }
         return size > 0 
-                ? result.append(elements[(end - 1 + elements.length) % elements.length]).append(']').toString()
+                ? result.append(elements[(size + start - 1) % elements.length]).append(']').toString()
                 : result.append(']').toString();
     }
 }

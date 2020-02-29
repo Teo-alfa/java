@@ -1,8 +1,9 @@
 package queue;
 
 public class ArrayQueue {
-    private int size, start, end;
+    private int size, start;
     private Object[] elements = new Object[2];
+    // !end = (start + size - 1) % elements.length
     // I: (queue = (end < start && [a[start], ... ,a[elementd.length - 1],a[0], ... ,a[end]])
     //           || (end >= start && [a[start], ... ,a[end]]) || (queue = [] && size == 0)) && size <= elements.length 
     // P1: 0 <= end, start && end, start < elements.length
@@ -17,8 +18,7 @@ public class ArrayQueue {
         // post1 : elements' : (elements'.length == 2 * n || (elements'.length == n && size < n)
         //                     && ∀ i ∈ [0, n) & Z : elements'[i] = elements[(i + start) % n] && start' = 0 && end' = (size - 1 || 0)) 
         //                      || (elements' = elements && size' = size && end' = end)
-        elements[end] = element;
-        end = (end + 1) % elements.length;
+        elements[(size + start - 1) % elements.length] = element;
         // end < elements.length
     }
     // post: elements = elements' && elements[(end - 1 + elements.length) %  elements.length] = element;
@@ -31,7 +31,9 @@ public class ArrayQueue {
         elements[start] = null;
         start = (start + 1) % elements.length;
         // start' = (start + 1 || 0)
-        size--;
+        if (--size == 0) {
+            start = 0;
+        }
         // size' = size - 1 && 0 <= size'
         return tmp;
     }
@@ -60,25 +62,21 @@ public class ArrayQueue {
     // pre: true
     public void clear() {
         elements = new Object[2];
-        size = start = end = 0;
+        size = start = 0;
     }
-    // post: elementselements = new Object[2], size = start = end = 0;
+    // post: elementselements = new Object[2], size = start = 0;
 
     // pre: true
     private void increaseSize() {
-        if (size == elements.length || (end + 1 == start)) {
-            // P3: size == elements.length || (end + 1 == start)
-            Object[] tmpObjects = new Object[(size == elements.length ? 2 : 1) * elements.length];
+        if (size == elements.length) {
+            // P3: size == elements.length
+            Object[] tmpObjects = new Object[2 * elements.length];
             for (int i = 0; i < size; i++) {
-                // P3 && size > 0
+                // P3 && size > 0 && i < size
                 tmpObjects[i] = elements[(i + start) % elements.length];
             }
             elements = tmpObjects;
-            if (end + 1 == start) {
-                // P3 && end + 1 == start
-                end = size > 0 ? size - 1 : 0;
-                start = 0;
-            }
+            start = 0;
         }
     }
     // post: elements' : (elements'.length == 2 * n || (elements'.length == n && size < n)
@@ -94,7 +92,7 @@ public class ArrayQueue {
             result.append(elements[(i + start) % elements.length].toString()).append(", ");
         }
         return size > 0 
-                ? result.append(elements[(end - 1 + elements.length) % elements.length]).append(']').toString()
+                ? result.append(elements[(size + start - 1) % elements.length]).append(']').toString()
                 : result.append(']').toString();
     }
     // Post : R = ( "[" + elements'[start] + ", " + ... + elements'[end] + "]" ) || "[]"

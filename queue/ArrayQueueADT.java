@@ -1,14 +1,13 @@
 package queue;
 
 public class ArrayQueueADT {
-    private int size, start, end;
+    private int size, start;
     private Object[] elements = new Object[2];
 
     public static void enqueue(ArrayQueueADT queue, Object element) {
         queue.size++;
         increaseSize(queue);
-        queue.elements[queue.end] = element;
-        queue.end = (queue.end + 1) % queue.elements.length;
+        queue.elements[(queue.size + queue.start - 1) % queue.elements.length] = element;
     }
 
     public static Object dequeue(ArrayQueueADT queue) {
@@ -16,7 +15,9 @@ public class ArrayQueueADT {
         Object tmp = queue.elements[queue.start];
         queue.elements[queue.start] = null;
         queue.start = (queue.start + 1) % queue.elements.length;
-        queue.size--;
+        if (--queue.size == 0) {
+            queue.start = 0;
+        }
         return tmp;
     }
 
@@ -35,20 +36,17 @@ public class ArrayQueueADT {
 
     public static void clear(ArrayQueueADT queue) {
         queue.elements = new Object[2];
-        queue.size = queue.start = queue.end = 0;
+        queue.size = queue.start = 0;
     }
 
     private static void increaseSize(ArrayQueueADT queue) {
-        if (queue.size == queue.elements.length || (queue.end + 1 == queue.start)) {
-            Object[] tmpObjects = new Object[(queue.size == queue.elements.length ? 2 : 1) * queue.elements.length];
+        if (queue.size == queue.elements.length ) {
+            Object[] tmpObjects = new Object[2 * queue.elements.length];
             for (int i = 0; i < queue.size; i++) {
                 tmpObjects[i] = queue.elements[(i + queue.start) % queue.elements.length];
             }
             queue.elements = tmpObjects;
-            if (queue.end + 1 == queue.start) {
-                queue.end = queue.size > 0 ? queue.size - 1 : 0;
-                queue.start = 0;
-            }
+            queue.start = 0;
         }
     }
 
@@ -59,7 +57,7 @@ public class ArrayQueueADT {
             result.append(queue.elements[(i + queue.start) % queue.elements.length].toString()).append(", ");
         }
         return queue.size > 0 
-                ? result.append(queue.elements[(queue.end - 1 + queue.elements.length) % queue.elements.length]).append(']').toString()
+                ? result.append(queue.elements[((queue.size + queue.start - 1) % queue.elements.length)]).append(']').toString()
                 : result.append(']').toString();
     }
 }
