@@ -40,7 +40,7 @@ public class ArrayQueueADT {
     }
 
     private static void increaseSize(ArrayQueueADT queue) {
-        if (queue.size == queue.elements.length ) {
+        if (queue.size > queue.elements.length ) {
             Object[] tmpObjects = new Object[2 * queue.elements.length];
             for (int i = 0; i < queue.size; i++) {
                 tmpObjects[i] = queue.elements[(i + queue.start) % queue.elements.length];

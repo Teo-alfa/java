@@ -40,7 +40,7 @@ public class ArrayQueueModule {
     }
 
     private static void increaseSize() {
-        if (size == elements.length) {
+        if (size > elements.length) {
             Object[] tmpObjects = new Object[2 * elements.length];
             for (int i = 0; i < size; i++) {
                 tmpObjects[i] = elements[(i + start) % elements.length];
