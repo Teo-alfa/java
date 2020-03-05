@@ -69,11 +69,15 @@ public class ArrayQueue {
     // pre: true
     private void increaseSize() {
         if (size > elements.length) {
-            // P3: size == elements.length
+            // P3: size = elements.length + 1, because we increase size only in enqueue() and only by one
             Object[] tmpObjects = new Object[2 * elements.length];
-            for (int i = 0; i < size; i++) {
-                // P3 && size > 0 && i < size
-                tmpObjects[i] = elements[(i + start) % elements.length];
+            if (start == 0) {
+                // P3 && start == 0 <=> queue.toStr() == elements.toStr() (if toStr() to elemenets same)
+                System.arraycopy(elements, 0, tmpObjects, 0, size - 1);
+            } else {
+                // P3 && start != 0 <=> queue = [elements[start], ... , elements[elements.length - 1], elements[0], ... , elements[start - 1]] && start > 0
+                System.arraycopy(elements, start, tmpObjects, 0, elements.length - start);
+                System.arraycopy(elements, 0, tmpObjects, elements.length - start, start);
             }
             elements = tmpObjects;
             start = 0;

@@ -1,5 +1,6 @@
 package queue;
 
+// all Hoar Triplets are same as for ArrauQueue, because we're using all methods like we using only one object of ArrayQueue
 public class ArrayQueueModule {
     private static int size, start;
     private static Object[] elements = new Object[2];
@@ -42,8 +43,13 @@ public class ArrayQueueModule {
     private static void increaseSize() {
         if (size > elements.length) {
             Object[] tmpObjects = new Object[2 * elements.length];
-            for (int i = 0; i < size; i++) {
-                tmpObjects[i] = elements[(i + start) % elements.length];
+            if (start == 0) {
+                // P3 && start == 0 <=> queue.toStr() == elements.toStr() (if toStr() to elemenets same)
+                System.arraycopy(elements, 0, tmpObjects, 0, size - 1);
+            } else {
+                // P3 && start != 0 <=> queue = [elements[start], ... , elements[elements.length - 1], elements[0], ... , elements[start - 1]] && start > 0
+                System.arraycopy(elements, start, tmpObjects, 0, elements.length - start);
+                System.arraycopy(elements, 0, tmpObjects, elements.length - start, start);
             }
             elements = tmpObjects;
             start = 0;
