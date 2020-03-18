@@ -1,5 +1,5 @@
 package queue;
-// same but ArrayQueue queue with in argument shouldn't be null
+// all Hoar Triplets are same as for ArrauQueue, but queue in arguments != null
 public class ArrayQueueADT {
     private int size, start;
     private Object[] elements = new Object[2];
@@ -9,6 +9,14 @@ public class ArrayQueueADT {
         queue.size++;
         increaseSize(queue);
         queue.elements[(queue.size + queue.start - 1) % queue.elements.length] = element;
+    }
+
+    public static void push(ArrayQueueADT queue, Object element) {
+        assert queue != null;
+        queue.size++;
+        increaseSize(queue);
+        queue.start = (queue.start - 1 + queue.elements.length) % queue.elements.length;
+        queue.elements[queue.start] = element;
     }
 
     public static Object dequeue(ArrayQueueADT queue) {
@@ -23,10 +31,27 @@ public class ArrayQueueADT {
         return tmp;
     }
 
+    public static Object remove(ArrayQueueADT queue) {
+        assert queue != null;
+        assert queue.size > 0;
+        Object tmp = queue.elements[(queue.start + queue.size - 1) % queue.elements.length];
+        queue.elements[(queue.start + queue.size - 1) % queue.elements.length] = null;
+        if (--queue.size == 0) {
+            queue.start = 0;
+        }
+        return tmp;
+    }
+
     public static Object element(ArrayQueueADT queue) {
         assert queue != null;
         assert queue.size > 0;
         return queue.elements[queue.start]; 
+    }
+
+    public static Object peek(ArrayQueueADT queue) {
+        assert queue != null;
+        assert queue.size > 0;
+        return queue.elements[(queue.start + queue.size - 1) % queue.elements.length];
     }
 
     public static int size(ArrayQueueADT queue) {

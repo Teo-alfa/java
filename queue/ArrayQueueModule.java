@@ -11,6 +11,13 @@ public class ArrayQueueModule {
         elements[(size + start - 1) % elements.length] = element;
     }
 
+    public static void push(Object element) {
+        size++;
+        increaseSize();
+        start = (start - 1 + elements.length) % elements.length;
+        elements[start] = element;
+    }
+
     public static Object dequeue() {
         assert size > 0;
         Object tmp = elements[start];
@@ -22,9 +29,24 @@ public class ArrayQueueModule {
         return tmp;
     }
 
+    public static Object remove() {
+        assert size > 0;
+        Object tmp = elements[(start + size - 1) % elements.length];
+        elements[(start + size - 1) % elements.length] = null;
+        if (--size == 0) {
+            start = 0;
+        }
+        return tmp;
+    }
+
     public static Object element() {
         assert size > 0;
         return elements[start]; 
+    }
+
+    public static Object peek() {
+        assert size > 0;
+        return elements[(start + size - 1) % elements.length];
     }
 
     public static int size() {
@@ -32,7 +54,7 @@ public class ArrayQueueModule {
     }
 
     public static boolean isEmpty() {
-        return size == 0;
+        return size() == 0;
     }
 
     public static void clear() {
