@@ -8,8 +8,9 @@ public class ArrayQueue {
     //    || (size == 1 && queue = [elements[start]])
     //    || (size > 1 && 
     //            (end < start && queue = [a[start], ... ,a[elements.length - 1],a[0], ... ,a[end])
-    //            || (end >= start && [a[start], ... ,a[end - 1]])
+    //            || (end >= start && [a[start], ... ,a[end]])
     //        ) && 0 <= start, size < elements.length   
+
     // pre: true
     public void enqueue(Object element) {
         size++;
