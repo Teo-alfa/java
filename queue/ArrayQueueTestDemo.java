@@ -4,8 +4,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.Random;
 
-import expression.Const;
-import expression.Variable;
+import expression.operations.Const;
+import expression.operations.Variable;
 
 public class ArrayQueueTestDemo {
     static int LINESIZE = 33;
@@ -45,9 +45,9 @@ public class ArrayQueueTestDemo {
             case 1:
                 return random.nextDouble();
             case 2:
-                return new Const(random.nextDouble());
+                return new Const<Double>(random.nextDouble());
             case 3: 
-                return new Variable(random.nextInt(1) == 0 ? "x" : random.nextInt(1) == 0 ? "y" : "z");
+                return new Variable<Integer>(random.nextInt(1) == 0 ? "x" : random.nextInt(1) == 0 ? "y" : "z");
             default: 
                 return null;
         }
