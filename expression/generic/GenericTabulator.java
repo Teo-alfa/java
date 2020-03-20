@@ -9,10 +9,10 @@ import expression.exceptions.ArithmeticException;
 
 public class GenericTabulator implements Tabulator {
     public Map<String, Mode<?>> modeMap = Map.of(
-        "i", new CheckedIntegerMode(),
+        "i", new IntegerMode(true),
         "d", new DoubleMode(),
         "bi", new BigIntegerMode(),
-        "u", new UncheckedIntegerMode(),
+        "u", new IntegerMode(false),
         "l", new LongMode(),
         "s", new ShortMode()
     );
