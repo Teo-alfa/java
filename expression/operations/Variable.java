@@ -34,12 +34,12 @@ public class Variable<T> implements TripleExpression<T> {
             name.equals("z") ? z : z;
     }
     
-    @Override
-    public boolean equals(Object object) {
-        return object != null 
-                && object.getClass() == this.getClass()
-                && this.name.equals(((Variable) object).name);
-    }
+    // @Override
+    // public boolean equals(Object object) {
+    //     return object != null 
+    //             && object.getClass() == this.getClass()
+    //             && this.name.equals(((Variable<T>) object).name);
+    // }
 
     @Override
     public int hashCode() {
