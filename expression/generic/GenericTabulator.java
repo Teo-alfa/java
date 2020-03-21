@@ -20,7 +20,7 @@ public class GenericTabulator implements Tabulator {
     @Override
     public Object[][][] tabulate(String mode, String expression, int x1, int x2, int y1, int y2, int z1, int z2)
             throws Exception {
-        Mode<?> calculateMode = modeMap.get(mode);
+        Mode<?> calculateMode = modeMap.getOrDefault(mode, new IntegerMode());
         return tabulateWithMode(calculateMode, expression, x1, x2, y1, y2, z1, z2);
     }
 
