@@ -1,5 +1,6 @@
 package queue;
 
+// all Hoar Triplets are same as for ArrauQueue, because we're using all methods like we using only one object of ArrayQueue
 public class ArrayQueueModule {
     private static int size, start;
     private static Object[] elements = new Object[2];
@@ -8,6 +9,13 @@ public class ArrayQueueModule {
         size++;
         increaseSize();
         elements[(size + start - 1) % elements.length] = element;
+    }
+
+    public static void push(Object element) {
+        size++;
+        increaseSize();
+        start = (start - 1 + elements.length) % elements.length;
+        elements[start] = element;
     }
 
     public static Object dequeue() {
@@ -21,9 +29,24 @@ public class ArrayQueueModule {
         return tmp;
     }
 
+    public static Object remove() {
+        assert size > 0;
+        Object tmp = elements[(start + size - 1) % elements.length];
+        elements[(start + size - 1) % elements.length] = null;
+        if (--size == 0) {
+            start = 0;
+        }
+        return tmp;
+    }
+
     public static Object element() {
         assert size > 0;
         return elements[start]; 
+    }
+
+    public static Object peek() {
+        assert size > 0;
+        return elements[(start + size - 1) % elements.length];
     }
 
     public static int size() {
@@ -31,7 +54,7 @@ public class ArrayQueueModule {
     }
 
     public static boolean isEmpty() {
-        return size == 0;
+        return size() == 0;
     }
 
     public static void clear() {
@@ -40,10 +63,15 @@ public class ArrayQueueModule {
     }
 
     private static void increaseSize() {
-        if (size == elements.length) {
+        if (size > elements.length) {
             Object[] tmpObjects = new Object[2 * elements.length];
-            for (int i = 0; i < size; i++) {
-                tmpObjects[i] = elements[(i + start) % elements.length];
+            if (start == 0) {
+                // P3 && start == 0 <=> queue.toStr() == elements.toStr() (if toStr() to elemenets same)
+                System.arraycopy(elements, 0, tmpObjects, 0, size - 1);
+            } else {
+                // P3 && start != 0 <=> queue = [elements[start], ... , elements[elements.length - 1], elements[0], ... , elements[start - 1]] && start > 0
+                System.arraycopy(elements, start, tmpObjects, 0, elements.length - start);
+                System.arraycopy(elements, 0, tmpObjects, elements.length - start, start);
             }
             elements = tmpObjects;
             start = 0;

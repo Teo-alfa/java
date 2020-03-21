@@ -1,5 +1,7 @@
 package expression.parser;
 
+import expression.exceptions.*;
+
 public class ExpressionSource {
     String source;
     int position;
@@ -26,5 +28,9 @@ public class ExpressionSource {
 
     public int position() {
         return position;
+    }
+
+    public IncorrectSyntaxException error(String message) {
+        return new IncorrectSyntaxException("(position: " + position + ") " +  message);
     }
 }

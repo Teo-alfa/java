@@ -1,6 +1,6 @@
 package queue;
 
-import expression.Const;
+import expression.operations.Const;
 
 public class Main {
     public static void main(String[] args) {
