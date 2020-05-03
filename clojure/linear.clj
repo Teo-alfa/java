@@ -1,9 +1,10 @@
-(defn mapply "M(ap) + (ap)ply: apply result of mapv" [f] (fn [& arg] (apply mapv f arg)))
+(defn term-op [f] (fn [& arg] (apply mapv f arg)))
+(defn element-op [f] (fn [x s1 & s] (mapv (fn [dx] (f dx (apply + s1 s))) x)))
 
-(def v+ (mapply +))
-(def v- (mapply -))
-(def v* (mapply *))
-(def vd (mapply /))
+(def v+ (term-op +))
+(def v- (term-op -))
+(def v* (term-op *))
+(def vd (term-op /))
 
 (defn scalar [a b & args] (apply + (apply v* a b args)))
 
@@ -16,32 +17,35 @@
             ]
         (apply v*v v1 v2 v)))
 
+; (defn v*s [v s1 & s] (let [k (reduce + s1 s)] (mapv (partial * k) v)))
+(def v*s (element-op *))
 
-(defn v*s [v s] (mapv (fn [k] (* k s)) v))
+(def m+ (term-op v+))
+(def m- (term-op v-))
+(def m* (term-op v*))
 
-(def m+ (mapply v+))
-(def m- (mapply v-))
-(def m* (mapply v*))
+; (defn m*s [m s1 & s] (mapv (fn [v] (apply v*s v s1 s)) m))
 
-(defn m*s [m s] (mapv (fn [v] (v*s v s)) m))
+(def m*s (element-op v*s))
+
 (defn transpose [m] (apply mapv vector m))
-(defn m*v [m v] (mapv (fn [x] (scalar x v)) m))
+(defn m*v [m v] (mapv (partial scalar v) m))
 
-(defn m*m [m1 m2] (transpose (mapv (fn [v] (m*v m1 v)) (transpose m2))))
+(defn m*m [m1 m2] (transpose (mapv (partial m*v m1) (transpose m2))))
 
-; Я не объединил mapply и smapply, хотя очевидно что smapply это расширение mapply и можно было лишь оставить smapply,
+; Я не объединил term-op и sterm-op, хотя очевидно что sterm-op это расширение term-op и можно было лишь оставить sterm-op,
 ; но я оставил обе функции чтобы тесты проходили быстрее, так как в первый функциях мне не надо самому проверять на то вектор ли это
 ; лишний раз. Пожалуйста, не баньте.
 
-(defn smapply [f] (
+(defn sterm-op [f] (
     fn [c1 & c]
         (if (vector? c1) 
-            (apply mapv (smapply f) c1 c)
+            (apply mapv (sterm-op f) c1 c)
             (apply f c1 c)
         )
     )
 )
 
-(def s+ (smapply +))
-(def s- (smapply -))
-(def s* (smapply *))
+(def s+ (sterm-op +))
+(def s- (sterm-op -))
+(def s* (sterm-op *))
