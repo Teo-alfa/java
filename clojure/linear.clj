@@ -1,47 +1,96 @@
-(defn term-op [f] (fn [& arg] (apply mapv f arg)))
-(defn element-op [f] (fn [x s1 & s] (mapv (fn [dx] (f dx (apply + s1 s))) x)))
+(defn same? [& args]
+    (and 
+        (>= (count args) 1)  
+        (vector? (first args))
+        (every? 
+            (fn [a] 
+                (and 
+                    (vector? a)
+                    (== (count a) (count(first args)))
+                    (or 
+                        (and 
+                            (number? (first a))
+                            (every? (partial number?) a))
+                        (and 
+                            (vector? (first a))
+                            (apply same? a))))) args)))
 
+(defn term-op [f] 
+    (fn [& args] 
+        {:pre [(apply same? args)]}
+        (apply mapv f args)))
+
+(defn element-op [f] 
+    (fn [x & s]
+        {:pre [(and (same? x) (every? (partial number?) s))]}
+        (let [k (if (== (count s) 0) 1 (apply * s))](mapv #(f % k) x))))
+
+(defn is-v-struct [f]
+    (fn [el]
+        (and 
+            (vector? el)
+            (every? f el))))
+
+(def v? (is-v-struct number?))
 (def v+ (term-op +))
 (def v- (term-op -))
 (def v* (term-op *))
 (def vd (term-op /))
 
-(defn scalar [a b & args] (apply + (apply v* a b args)))
+(defn scalar [& args] 
+    {:pre [(every? v? args)]}
+    (apply + (apply v* args)))
 
-(defn vect [v1 v2 & v] 
+(defn vect [& v] 
+    {:pre [(and (>= (count v) 1) (every? v? v) (== (count (first v)) 3) (apply same? v))]}
     (letfn [ 
-        (minor [a b pos1 pos2] 
+        (minor [a b pos1 pos2]
             (- (* (nth a pos1) (nth b pos2)) (* (nth a pos2) (nth b pos1))))
-        (v*v [a b] 
+        (v*v [a b]
             [(minor a b 1 2) (- (minor a b 0 2)) (minor a b 0 1)])
-            ]
-        (apply v*v v1 v2 v)))
+    ]
+        (reduce v*v v)))
 
-; (defn v*s [v s1 & s] (let [k (reduce + s1 s)] (mapv (partial * k) v)))
 (def v*s (element-op *))
 
+(def m? (is-v-struct v?))
 (def m+ (term-op v+))
 (def m- (term-op v-))
 (def m* (term-op v*))
 
-; (defn m*s [m s1 & s] (mapv (fn [v] (apply v*s v s1 s)) m))
-
 (def m*s (element-op v*s))
 
-(defn transpose [m] (apply mapv vector m))
-(defn m*v [m v] (mapv (partial scalar v) m))
+(defn transpose [m] 
+    {:pre [(m? m)]}
+    (apply mapv vector m))
 
-(defn m*m [m1 m2] (transpose (mapv (partial m*v m1) (transpose m2))))
+(defn m*v [m v] 
+    {:pre [(and (m? m) (v? v) (== (count v) (count (first m))))]}
+    (mapv (partial scalar v) m))
 
-; Я не объединил term-op и sterm-op, хотя очевидно что sterm-op это расширение term-op и можно было лишь оставить sterm-op,
-; но я оставил обе функции чтобы тесты проходили быстрее, так как в первый функциях мне не надо самому проверять на то вектор ли это
-; лишний раз. Пожалуйста, не баньте.
+(defn m*m [& m] 
+    (:pre [(every? m? m)])
+    (reduce #(transpose (mapv (partial m*v %1) (transpose %2))) m))
 
-(defn sterm-op [f] (
-    fn [c1 & c]
-        (if (vector? c1) 
-            (apply mapv (sterm-op f) c1 c)
-            (apply f c1 c)
+(defn s-same? [& args]
+    (or
+        (every? number? args)
+        (if (every? v? args)
+            (apply same? args)
+            (and 
+                (every? vector? args)
+                (every? true? (apply mapv s-same? args))
+            )
+        )
+    )
+)
+
+(defn sterm-op [f] 
+    (fn [& c]
+        {:pre [(apply s-same? c)]}
+        (if (vector? (first c)) 
+            (apply mapv (sterm-op f) c)
+            (apply f c)
         )
     )
 )
@@ -49,3 +98,24 @@
 (def s+ (sterm-op +))
 (def s- (sterm-op -))
 (def s* (sterm-op *))
+
+(defn t-same? [& args]
+    (if (every? v? args) 
+        (apply same? args)
+        (and
+            (every? #(== (count %) (count (first args))) args) 
+            (every? #(apply t-same? %) args)
+            (every? true? (apply mapv t-same? args))
+        )
+    )
+)
+
+(defn tterm-op [f] 
+    (fn [& t]
+        {:pre [(apply t-same? t)]}
+        (apply (sterm-op f) t)))
+
+(def t+ (tterm-op +))
+(def t- (tterm-op -))
+(def t* (tterm-op *))
+
