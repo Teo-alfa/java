@@ -1,5 +1,8 @@
 "use strict"
 
+// :NOTE: common mistakes: 2, 4, 7, 8
+// (hard modification failed on test, easy checked)
+
 const Expression = (function() {
     const variables = {'x': 0, 'y': 1, 'z': 2};
     function Const(val) {
@@ -172,17 +175,25 @@ const Expression = (function() {
     //                 : new Const(+input);
     // }
 
+    function ParserError(ms) {
+        this.message = ms;
+    }
+
+    ParserError.prototype = Object.create(Error.prototype);
+    ParserError.prototype.constructor = ParserError;
+    ParserError.prototype.name = "ParserError";
+
     const parseTerm = input => {
         if (isNaN(parseFloat(input)) && input[0] != '-') {
             if (!(input in variables)) {
-                throw Error("Incorrect variable name: " + input);
+                throw new ParserError("Incorrect variable name: " + input);
             }
         } 
         if (input in variables) {
             return new Variable(input);
         } else {
             if (isNaN(input)) {
-                throw Error("Invalid number: " + input);
+                throw new ParserError("Invalid number: " + input);
             }
             return new Const(parseFloat(input));
         }
@@ -196,52 +207,72 @@ const Expression = (function() {
             return prev;
         }, [])[0];
     }
+    
 
     const parsePostfix = input => {
         if (input.length == 0) {
-            throw Error("Empty input");
+            throw new ParserError("Empty input");
         }
         let res = input.replace(/\(|\)/g, u => " " + u + " ")
                         .trim()
                         .split(/\s+/)
                         .reduce((prev, curr) => {
             if (prev.length > 0 && prev[prev.length - 1] in functions && curr != ')') {
-                throw Error("Missing closing bracket");
+                throw new ParserError("Missing closing bracket");
             }
             if (curr === ')') {
-                if (!(prev.pop() in functions)) {
-                    throw Error("missed operation");
+                if (prev.length == 0) {
+                    throw new ParserError("Missing (");
                 }
-            } else if (curr in functions) {
-                if (functions[curr].prototype.numArg != 0 && prev.length <= functions[curr].prototype.numArg) {
-                    throw Error("not enough terms");
+                let last = prev.pop();
+                if (!(last in functions)) {
+                    if (last === '(') {
+                        throw new ParserError("Empty brackets");
+                    } else if (last instanceof Const) {
+                        throw new ParserError("Expected: operation, actual: const");
+                    } else if (last instanceof Variable) {
+                        throw new ParserError("Expected: operation, actual: variable");
+                    }
+                    throw new ParserError("Missed operation");
                 }
                 let terms = [];
-                if (functions[curr].prototype.numArg == 0) {
+                let op = last;
+                if (functions[op].prototype.numArg != 0) {
+                    if (prev.length == functions[op].prototype.numArg && prev[0] != '(') {
+                        throw new ParserError("Missing (");
+                    }
+                    if (prev.length <= functions[op].prototype.numArg) {
+                        throw new ParserError("Not enough terms for \"" + op + "\" (expected " + functions[op].prototype.numArg + ")");
+                    }
+                }
+                if (functions[op].prototype.numArg == 0) {
                     while (prev.length > 0 && prev[prev.length - 1] != '(') {
                         terms.unshift(prev.pop());
                     }
+                    if (prev.length == 0) {
+                        throw new ParserError("Missing (");
+                    }
                 } else {
-                    terms = prev.splice(-functions[curr].prototype.numArg);
+                    terms = prev.splice(-functions[op].prototype.numArg);
                 }
-                if (prev.length == 0 || prev.pop() != '(') {
-                    throw Error("no opening brackets")
+                if (prev.length == 0) {
+                    throw new ParserError("Missing (")
+                } else if (prev.pop() != '(') {
+                    throw new ParserError("More terms for \"" + op + "\" (expected " + functions[op].prototype.numArg + ")")
                 }
-                prev.push(new functions[curr](...terms));
+                prev.push(new functions[op](...terms));
+            } else if (curr in functions || curr === '(') {
                 prev.push(curr);
             } else if (curr != '(') {
-                let a  = parseTerm(curr);
                 if (prev[prev.length - 1] in functions) {
-                    throw Error("missing closing bracket");
+                    throw new ParserError("Missing closing bracket");
                 }
-                prev.push(a);
-            } else {
-                prev.push(curr);
+                prev.push(parseTerm(curr));
             }
             return prev;
         }, []);
         if (res.length != 1) {
-            throw Error(res.pop() === '(' ? "Missing )" : "Excessive info");
+            throw new ParserError(res.pop() in functions ? "Missing )" : "Excessive info");
         }
         return res.pop();
     }
@@ -340,7 +371,8 @@ const Expression = (function() {
         Sum : Sum,
         parse : parse,
         parsePrefix : parsePrefix,
-        parsePostfix : parsePostfix
+        parsePostfix : parsePostfix,
+        ParserError : ParserError
     }
 })();
 const 
@@ -364,7 +396,8 @@ const
     Avg = Expression.Avg,
     parse = Expression.parse,
     parsePrefix = Expression.parsePrefix,
-    parsePostfix = Expression.parsePostfix;
+    parsePostfix = Expression.parsePostfix,
+    ParserError = Expression.ParserError;
 
 Const.prototype.toString = 
 Const.prototype.prefix = 

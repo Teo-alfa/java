@@ -5,6 +5,7 @@ import java.util.*;
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
+
 public class Main {
     public static void main(String[] args) {
         Settings settings = new Settings();

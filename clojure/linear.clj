@@ -23,7 +23,7 @@
 (defn element-op [f] 
     (fn [x & s]
         {:pre [(and (same? x) (every? (partial number?) s))]}
-        (let [k (if (== (count s) 0) 1 (apply * s))](mapv #(f % k) x))))
+        (def k (if (== (count s) 0) 1 (apply * s))) (mapv #(f % k) x)))
 
 (defn is-v-struct [f]
     (fn [el]
@@ -41,12 +41,21 @@
     {:pre [(every? v? args)]}
     (apply + (apply v* args)))
 
+(comment "common 2, hard is not accepted")
 (defn vect [& v] 
     {:pre [(and (>= (count v) 1) (every? v? v) (== (count (first v)) 3) (apply same? v))]}
     (letfn [ 
-        (minor [a b pos1 pos2]
+        (minor [a b pos1 pos2] 
+            {:pre [
+                (and 
+                    (v? a) 
+                    (== (count a) 3) 
+                    (same? a b) 
+                    (every? #(and (integer? %) (<= % 2) (>= % 0)) [pos1 pos2]))
+                ]
+            }
             (- (* (nth a pos1) (nth b pos2)) (* (nth a pos2) (nth b pos1))))
-        (v*v [a b]
+        (v*v [a b] {:pre [(and (v? a) (== (count a) 3) (same? a b))]}
             [(minor a b 1 2) (- (minor a b 0 2)) (minor a b 0 1)])
     ]
         (reduce v*v v)))
@@ -70,7 +79,7 @@
 
 (defn m*m [& m] 
     (:pre [(every? m? m)])
-    (reduce #(transpose (mapv (partial m*v %1) (transpose %2))) m))
+    (reduce (fn [m1 m2] (def mt2 (transpose m2)) (mapv (partial m*v mt2) m1)) m))
 
 (defn s-same? [& args]
     (or
@@ -118,4 +127,3 @@
 (def t+ (tterm-op +))
 (def t- (tterm-op -))
 (def t* (tterm-op *))
-

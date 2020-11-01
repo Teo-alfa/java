@@ -198,7 +198,8 @@ public class ExpressionParser<T> implements Parser<T> {
         return result.toString();
     }
 
-    protected TripleExpression<T> converter(String symbol, TripleExpression<T> op1, TripleExpression<T> op2) {
+    protected TripleExpression<T> converter(String symbol, TripleExpression<T> op1, TripleExpression<T> op2)
+            throws IllegalArgumentException {
         switch (symbol) {
             case "+" :
                 return new Add<T>(op1, op2, mode);
